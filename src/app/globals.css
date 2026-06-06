@@ -1,0 +1,355 @@
+@import "tailwindcss";
+
+/* =========================================================
+   PURE WHITE editorial portfolio — design tokens
+   ========================================================= */
+:root {
+  --bg:      #FAFAF7;        /* warm off-white */
+  --text:    #0A0A0A;        /* near-black */
+  --muted:   #8A8A85;
+  --accent:  #FF4D1A;        /* vermillion — hover/active only */
+  --rule:    #E2E0D9;        /* hairline divider */
+
+  --ease:    cubic-bezier(0.22, 1, 0.36, 1);
+  --dur:     500ms;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-muted:      var(--muted);
+  --color-accent:     var(--accent);
+  --font-sans:  var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), -apple-system, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body { min-height: 100dvh; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.mono {
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.serif-it {
+  font-family:
+    var(--font-serif),
+    var(--font-devanagari),
+    var(--font-gurmukhi),
+    var(--font-jp),
+    "Times New Roman",
+    serif;
+  font-style: italic;
+  font-weight: 400;
+}
+/* Indic + CJK scripts don't really do italic — fall back gracefully. */
+.serif-it:lang(hi),
+.serif-it:lang(pa),
+.serif-it:lang(ja) {
+  font-style: normal;
+}
+
+/* =========================================================
+   Hero reveal — restrained editorial motion
+   ========================================================= */
+
+/* Greeting — pure opacity fade, no movement, no blur.
+   Slower curve so it feels soft, not snappy. */
+.intro-greeting {
+  animation: intro-greeting-fade 1400ms ease-out both;
+}
+@keyframes intro-greeting-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Letters of the tagline cascade up + de-blur + tighten letter-spacing.
+   Each letter uses inline-block + animation-delay (set on element). */
+.letter {
+  display: inline-block;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(60px) scale(0.86);
+  filter: blur(14px);
+  letter-spacing: 0.12em;
+  will-change: opacity, transform, filter, letter-spacing;
+}
+.letter.in {
+  animation: letter-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes letter-rise {
+  0%   { opacity: 0; transform: translateY(60px) scale(0.86); filter: blur(14px); letter-spacing: 0.12em; }
+  55%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); letter-spacing: -0.02em; }
+}
+
+/* Soft atmospheric sweep across the hero during reveal */
+.reveal-wave {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 700px at 0% 50%,
+      rgba(199, 182, 255, 0.26) 0%,
+      rgba(255, 180, 224, 0.14) 30%,
+      transparent 55%);
+  opacity: 0;
+  z-index: 0;
+}
+.reveal-wave.play {
+  animation: wave-sweep 1500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes wave-sweep {
+  0%   { opacity: 0; transform: translateX(-30%); }
+  35%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translateX(140%); }
+}
+
+/* Intro exit — soft handoff into the main hero */
+.intro-exit {
+  animation: intro-out 780ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes intro-out {
+  0%   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-14px) scale(1.02); filter: blur(10px); }
+}
+
+/* Mockup reveal — pure opacity + de-blur fade. No transform at all, so it
+   can't move, scale, or bounce against the column's width/height reveal. */
+.mockup-enter {
+  animation: mockup-fly 700ms ease-out both;
+  will-change: opacity, filter;
+}
+@keyframes mockup-fly {
+  0%   { opacity: 0; filter: blur(6px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+/* Hero typewriter cursor — base blink */
+.cursor {
+  display: inline-block;
+  width: 0.05em;
+  height: 0.85em;
+  background: var(--text);
+  margin-left: 0.05em;
+  vertical-align: -0.06em;
+  animation: blink 1.05s steps(2) infinite;
+  transform-origin: center;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Subtle "alive" pulse — slight scaleY + width breathing on top of blink.
+   Reads as a vibration without being noisy. */
+.cursor-pulse { animation: blink 1.05s steps(2) infinite; }
+
+/* Tech logos — monochrome at rest, brand color on hover */
+.tech-logo {
+  color: var(--muted);
+  transition: color 300ms var(--ease), transform 300ms var(--ease);
+}
+.tech-logo:hover {
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   Résumé — folding paper cards (3D scroll reveal)
+   ========================================================= */
+
+.resume-section {
+  min-height: 320dvh;
+  border-top: 1px solid var(--rule);
+}
+
+/* Document "ink on paper" typography */
+.doc {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #1b1a16;
+}
+
+.resume-folds {
+  perspective: 1700px;
+  transform-style: preserve-3d;
+}
+
+/* Each fold = a sheet of paper that folds down on scroll */
+.resume-panel {
+  position: relative;
+  padding: clamp(26px, 3.4vw, 52px);
+  background-color: #fbf8ef;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 3px;
+  box-shadow:
+    0 1px 2px rgba(20, 18, 12, 0.05),
+    0 2px 8px rgba(20, 18, 12, 0.05),
+    0 30px 60px -30px rgba(20, 18, 12, 0.26);
+  transform: translateY(var(--fold-lift)) rotateX(var(--fold-rotate));
+  transform-origin: top center;
+  opacity: var(--fold-opacity);
+  backface-visibility: hidden;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+/* paper grain */
+.resume-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+/* warm edge */
+.resume-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(120, 100, 60, 0.05);
+}
+.resume-panel + .resume-panel {
+  margin-top: 16px;
+}
+
+/* Section header rule — classic CV */
+.paper-h {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.paper-h span {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #6b6552;
+  white-space: nowrap;
+}
+.paper-h .rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(27, 26, 22, 0.18);
+}
+
+/* Mobile: flatten the folds into a plain stacked read */
+@media (max-width: 767px) {
+  .resume-section {
+    min-height: auto;
+  }
+  .resume-sticky {
+    min-height: 0 !important;
+    position: static !important;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  .resume-folds {
+    perspective: none;
+    transform-style: flat;
+  }
+  .resume-panel {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* =========================================================
+   Custom cursor + magnetic buttons (fine-pointer only)
+   ========================================================= */
+@media (pointer: fine) {
+  /* Hide the native cursor so ours reads cleanly */
+  html { cursor: none; }
+  a, button, input, textarea, label, [data-cursor="hover"] { cursor: none; }
+
+  .cursor-dot,
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 9999px;
+    will-change: transform, opacity;
+  }
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--text);
+    transition: opacity 300ms var(--ease);
+  }
+  .cursor-ring {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(10, 10, 10, 0.35);
+    transition:
+      width 300ms var(--ease),
+      height 300ms var(--ease),
+      border-color 300ms var(--ease),
+      background-color 300ms var(--ease),
+      opacity 300ms var(--ease);
+  }
+  /* grow + accent-tint over interactive elements */
+  .cursor-ring[data-active="true"] {
+    width: 56px;
+    height: 56px;
+    border-color: var(--accent);
+    background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+}
+
+/* Magnetic base — JS writes transform on hover; this springs it back. */
+.magnetic {
+  transition: transform 400ms var(--ease);
+  will-change: transform;
+}
+
+/* =========================================================
+   Lenis smooth scroll (required base styles)
+   ========================================================= */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+/* Anchor jumps (Back to top, etc.) stay smooth even without Lenis. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magnetic { transition: none; }
+}
