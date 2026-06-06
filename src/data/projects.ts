@@ -6,9 +6,7 @@
  * Until they exist, the Phone shows a branded gradient fallback automatically.
  *
  * Image specs: vertical phone screenshots (≈1080×2340 / 9:19.5), .jpg or .webp,
- * < 300 KB each. A single image also works (it'll just Ken Burns, no cross-fade).
- *
- * TODO(Armaan): confirm Bloom + Estate taglines/category/brandColor/year.
+ * < 300 KB each. A single image also works (it cross-fades only when 2+).
  */
 export interface Project {
   slug: string;

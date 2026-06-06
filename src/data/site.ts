@@ -8,7 +8,6 @@
  * Privacy tip: after activating, FormSubmit emails you a random alias like
  * "a1b2c3d4". Paste that into `formSubmitId` to keep your email out of the page.
  *
- * TODO(Armaan): confirm GitHub + Instagram handles below.
  */
 export interface SocialLink {
   label: string;
@@ -25,8 +24,8 @@ export const site = {
   formSubmitId: "1fc54edea6a91ba54b8aa72bc4f77e88",
   socials: [
     { label: "LinkedIn",  href: "https://linkedin.com/in/armaan02", handle: "in/armaan02" },
-    { label: "GitHub",    href: "https://github.com/armaansekhon",   handle: "@armaansekhon" }, // TODO: confirm handle
-    { label: "Instagram", href: "https://instagram.com/armaansekhon", handle: "@armaansekhon" }, // TODO: confirm handle
+    { label: "GitHub",    href: "https://github.com/armaansekhon",            handle: "@armaansekhon" },
+    { label: "Instagram", href: "https://www.instagram.com/a_rmaan_sekhon_/", handle: "@a_rmaan_sekhon_" },
   ] satisfies SocialLink[],
 } as const;
 
